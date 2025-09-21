@@ -4,8 +4,7 @@ on:
     push:
         branches:
             - main
-
-# This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
+    workflow_dispatch:
 
 jobs:
     publish-tauri:
@@ -55,6 +54,6 @@ jobs:
                   tagName: wiregui-v__VERSION__
                   releaseName: "WireGUI v__VERSION__"
                   releaseBody: "See the assets to download this version and install."
-                  releaseDraft: true
-                  prerelease: false
+                  releaseDraft: false
+                  prerelease: true
                   args: ${{ matrix.args }}
