@@ -12,9 +12,9 @@ WireGUI is a file manager built with Tauri. It features a blazingly fast backend
 
 ## Showcase
 
-![WireGUI Demo](showcase.mp4)
+Watch the Showcase on YouTube!
 
-_Watch WireGUI in action - a blazingly fast file manager with a modern interface_
+[Click here!](https://youtu.be/IGNkmqqgPrM)
 
 ## Features
 
