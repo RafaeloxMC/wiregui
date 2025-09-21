@@ -103,6 +103,11 @@ async fn list_directory(path: String) -> Result<DirectoryContents, String> {
     result
 }
 
+#[tauri::command]
+async fn list_directory_no_cache(path: String) -> Result<DirectoryContents, String> {
+    list_directory_uncached(path).await
+}
+
 async fn list_directory_uncached(path: String) -> Result<DirectoryContents, String> {
     let dir_path = Path::new(&path);
 
@@ -121,6 +126,12 @@ async fn list_directory_uncached(path: String) -> Result<DirectoryContents, Stri
     let mut entry_tasks = Vec::new();
 
     while let Ok(Some(entry)) = dir_entries.next_entry().await {
+        let file_path = entry.path();
+
+        if should_skip_system_file(&file_path) {
+            continue;
+        }
+
         let task = task::spawn(async move {
             let file_path = entry.path();
             let file_name = file_path
@@ -283,6 +294,10 @@ async fn search_recursive_async(
             .unwrap_or("Unknown");
 
         if file_name.starts_with('.') {
+            continue;
+        }
+
+        if should_skip_system_file(&file_path) {
             continue;
         }
 
@@ -528,6 +543,10 @@ async fn search_recursive_streaming(
             continue;
         }
 
+        if should_skip_system_file(&file_path) {
+            continue;
+        }
+
         if matches_pattern(file_name, &query) {
             let app_clone = app.clone();
             let results_count_clone = results_count.clone();
@@ -760,6 +779,24 @@ async fn delete_item(path: String) -> Result<(), String> {
     Ok(())
 }
 
+fn should_skip_system_file(path: &Path) -> bool {
+    let path_str = path.to_string_lossy();
+
+    if path_str.starts_with("/proc/self/") {
+        return true;
+    }
+
+    if path_str.starts_with("/proc/") && path_str.contains("/task") {
+        return true;
+    }
+
+    if path_str.starts_with("/sys/") {
+        return true;
+    }
+
+    false
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     #[cfg(target_os = "linux")]
@@ -771,6 +808,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             list_directory,
+            list_directory_no_cache,
             get_home_directory,
             search_files,
             search_files_streaming,

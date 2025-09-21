@@ -9,6 +9,14 @@ export class FileSystemAPI {
 		return await invoke<DirectoryContents>("list_directory", { path });
 	}
 
+	static async listDirectoryNoCache(
+		path: string
+	): Promise<DirectoryContents> {
+		return await invoke<DirectoryContents>("list_directory_no_cache", {
+			path,
+		});
+	}
+
 	static async getHomeDirectory(): Promise<string> {
 		return await invoke<string>("get_home_directory");
 	}

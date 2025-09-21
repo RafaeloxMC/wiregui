@@ -6,7 +6,7 @@ import { FileList } from "./FileList";
 import { FileDetails } from "./FileDetails";
 import { ContextMenu } from "./ContextMenu";
 import { ThemeSwitcher } from "./ThemeSwitcher";
-import { SearchIcon, PaletteIcon } from "./Icons";
+import { SearchIcon, PaletteIcon, EyeIcon, EyeOffIcon } from "./Icons";
 
 export const FileManager: React.FC = () => {
 	const [currentDirectory, setCurrentDirectory] =
@@ -24,6 +24,7 @@ export const FileManager: React.FC = () => {
 	const [searchCleanup, setSearchCleanup] = useState<(() => void) | null>(
 		null
 	);
+	const [showHiddenFiles, setShowHiddenFiles] = useState(false);
 	const [contextMenu, setContextMenu] = useState<{
 		x: number;
 		y: number;
@@ -57,6 +58,36 @@ export const FileManager: React.FC = () => {
 
 			try {
 				const contents = await FileSystemAPI.listDirectory(path);
+				setCurrentDirectory(contents);
+
+				if (addToHistory) {
+					const newHistory = history.slice(0, historyIndex + 1);
+					newHistory.push(path);
+					setHistory(newHistory);
+					setHistoryIndex(newHistory.length - 1);
+				}
+			} catch (err) {
+				setError(
+					err instanceof Error
+						? err.message
+						: "Failed to load directory"
+				);
+			} finally {
+				setLoading(false);
+			}
+		},
+		[history, historyIndex]
+	);
+
+	const loadDirectoryNoCache = useCallback(
+		async (path: string, addToHistory: boolean = true) => {
+			setLoading(true);
+			setError(null);
+			setSelectedEntries([]);
+			setSelectedForDetails(null);
+
+			try {
+				const contents = await FileSystemAPI.listDirectoryNoCache(path);
 				setCurrentDirectory(contents);
 
 				if (addToHistory) {
@@ -158,7 +189,7 @@ export const FileManager: React.FC = () => {
 
 	const handleRefresh = () => {
 		if (currentDirectory) {
-			loadDirectory(currentDirectory.current_path, false);
+			loadDirectoryNoCache(currentDirectory.current_path, false);
 		}
 	};
 
@@ -373,7 +404,7 @@ export const FileManager: React.FC = () => {
 					</div>
 
 					<button
-						onClick={clearSearch}
+						onClick={() => handleSearch(searchQuery)}
 						className="px-6 py-3 rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
 						style={{
 							backgroundColor: "var(--color-primary)",
@@ -395,7 +426,20 @@ export const FileManager: React.FC = () => {
 							Clear
 						</button>
 					)}
-
+					<button
+						className="p-3 rounded-xl transition-all duration-200"
+						style={{
+							color: "var(--color-text)",
+							backgroundColor: isThemeSwitcherOpen
+								? "var(--color-primary)"
+								: "var(--color-backgroundSecondary)",
+							border: "1px solid var(--color-border)",
+							borderRadius: "var(--border-radius-xl)",
+						}}
+						onClick={() => setShowHiddenFiles(!showHiddenFiles)}
+					>
+						{showHiddenFiles ? <EyeIcon /> : <EyeOffIcon />}
+					</button>
 					<button
 						ref={themeSwitcherButtonRef}
 						onClick={() =>
@@ -474,7 +518,13 @@ export const FileManager: React.FC = () => {
 						)}
 
 						<FileList
-							entries={displayedEntries}
+							entries={
+								showHiddenFiles
+									? displayedEntries
+									: displayedEntries.filter(
+											(f) => !f.name.startsWith(".")
+									  )
+							}
 							onEntryDoubleClick={handleEntryDoubleClick}
 							onEntryContextMenu={handleEntryContextMenu}
 							onEmptySpaceContextMenu={
