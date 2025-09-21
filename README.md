@@ -1,5 +1,11 @@
 # WireGUI File Manager
 
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/RafaeloxMC/wiregui)](https://github.com/RafaeloxMC/wiregui/releases/latest)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/RafaeloxMC/wiregui/tauri.yml?branch=main)](https://github.com/RafaeloxMC/wiregui/actions/workflows/tauri.yml)
+[![GitHub downloads](https://img.shields.io/github/downloads/RafaeloxMC/wiregui/total)](https://github.com/RafaeloxMC/wiregui/releases)
+[![License](https://img.shields.io/github/license/RafaeloxMC/wiregui)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)](https://github.com/RafaeloxMC/wiregui/releases)
+
 What should've been a WireGuard client at first, turned out to be... a file manager?
 
 WireGUI is a file manager built with Tauri. It features a blazingly fast backend written in Rust, and a sleek, modern frontend built with React.
