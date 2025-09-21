@@ -10,6 +10,12 @@ What should've been a WireGuard client at first, turned out to be... a file mana
 
 WireGUI is a file manager built with Tauri. It features a blazingly fast backend written in Rust, and a sleek, modern frontend built with React.
 
+## Showcase
+
+![WireGUI Demo](showcase.mp4)
+
+_Watch WireGUI in action - a blazingly fast file manager with a modern interface_
+
 ## Features
 
 -   Fast and efficient file operations
