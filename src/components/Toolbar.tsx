@@ -3,6 +3,7 @@ import {
 	ArrowLeftIcon,
 	ArrowRightIcon,
 	ArrowUpIcon,
+	HardDriveIcon,
 	HomeIcon,
 	RefreshIcon,
 } from "./Icons";
@@ -16,8 +17,8 @@ interface ToolbarProps {
 	onUp: () => void;
 	onHome: () => void;
 	onRefresh: () => void;
+	onNavigateToPath: (path: string) => void;
 }
-
 export const Toolbar: React.FC<ToolbarProps> = ({
 	currentPath,
 	canGoBack,
@@ -27,6 +28,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 	onUp,
 	onHome,
 	onRefresh,
+	onNavigateToPath,
 }) => {
 	const pathParts = currentPath.split("/").filter(Boolean);
 
@@ -89,33 +91,48 @@ export const Toolbar: React.FC<ToolbarProps> = ({
 						border: "1px solid var(--color-border)",
 					}}
 				>
-					<HomeIcon size={14} className="flex-shrink-0" />
+					<button
+						onClick={() => onNavigateToPath("/")}
+						className="flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity"
+					>
+						<HardDriveIcon size={14} />
+					</button>
 					{pathParts.length === 0 ? (
-						<span>Home</span>
+						<span>/</span>
 					) : (
-						<>
-							<span className="opacity-60">~</span>
-							{pathParts.map((part, index) => (
+						pathParts.map((part, index) => {
+							const pathToIndex =
+								"/" + pathParts.slice(0, index + 1).join("/");
+							const isLast = index === pathParts.length - 1;
+
+							return (
 								<React.Fragment key={index}>
 									<span className="opacity-40">/</span>
-									<span
-										className={
-											index === pathParts.length - 1
-												? "font-semibold"
-												: "opacity-70"
-										}
-										style={{
-											color:
-												index === pathParts.length - 1
-													? "var(--color-text)"
-													: "var(--color-textMuted)",
-										}}
-									>
-										{part}
-									</span>
+									{isLast ? (
+										<span
+											className="font-semibold px-1 py-0.5"
+											style={{
+												color: "var(--color-text)",
+											}}
+										>
+											{part}
+										</span>
+									) : (
+										<button
+											onClick={() =>
+												onNavigateToPath(pathToIndex)
+											}
+											className="opacity-70 hover:opacity-100 transition-opacity cursor-pointer rounded px-1 py-0.5 hover:bg-gray-200/20"
+											style={{
+												color: "var(--color-textMuted)",
+											}}
+										>
+											{part}
+										</button>
+									)}
 								</React.Fragment>
-							))}
-						</>
+							);
+						})
 					)}
 				</div>
 			</div>

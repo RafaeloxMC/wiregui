@@ -281,6 +281,7 @@ export const FileManager: React.FC = () => {
 					onUp={handleUp}
 					onHome={navigateToHome}
 					onRefresh={handleRefresh}
+					onNavigateToPath={loadDirectory}
 				/>
 			)}
 
