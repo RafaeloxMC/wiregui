@@ -7,6 +7,7 @@ interface ContextMenuProps {
 	x: number;
 	y: number;
 	entry: FileEntry | null;
+	currentDirectory: string;
 	onClose: () => void;
 	onRefresh: () => void;
 }
@@ -15,6 +16,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 	x,
 	y,
 	entry,
+	currentDirectory,
 	onClose,
 	onRefresh,
 }) => {
@@ -52,14 +54,15 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 	const handleCreateFile = async () => {
 		if (!newName.trim()) return;
 
-		const currentDir = entry?.is_directory
+		const targetDir = entry?.is_directory
 			? entry.path
-			: entry?.path.split("/").slice(0, -1).join("/") || "/";
-		const filePath = `${currentDir}/${newName.trim()}`;
+			: entry
+			? entry.path.split("/").slice(0, -1).join("/") || "/"
+			: currentDirectory;
+		const filePath = `${targetDir}/${newName.trim()}`;
 
 		try {
-			await FileSystemAPI.createFile(filePath);
-			onRefresh();
+			await FileSystemAPI.createFile(filePath).then(() => onRefresh());
 			onClose();
 		} catch (error) {
 			console.error("Failed to create file:", error);
@@ -72,14 +75,17 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 	const handleCreateFolder = async () => {
 		if (!newName.trim()) return;
 
-		const currentDir = entry?.is_directory
+		const targetDir = entry?.is_directory
 			? entry.path
-			: entry?.path.split("/").slice(0, -1).join("/") || "/";
-		const folderPath = `${currentDir}/${newName.trim()}`;
+			: entry
+			? entry.path.split("/").slice(0, -1).join("/") || "/"
+			: currentDirectory;
+		const folderPath = `${targetDir}/${newName.trim()}`;
 
 		try {
-			await FileSystemAPI.createDirectory(folderPath);
-			onRefresh();
+			await FileSystemAPI.createDirectory(folderPath).then(() =>
+				onRefresh()
+			);
 			onClose();
 		} catch (error) {
 			console.error("Failed to create folder:", error);
@@ -93,8 +99,9 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 		if (!newName.trim() || !entry) return;
 
 		try {
-			await FileSystemAPI.renameItem(entry.path, newName.trim());
-			onRefresh();
+			await FileSystemAPI.renameItem(entry.path, newName.trim()).then(
+				() => onRefresh()
+			);
 			onClose();
 		} catch (error) {
 			console.error("Failed to rename item:", error);
@@ -113,8 +120,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 		if (!confirmed) return;
 
 		try {
-			await FileSystemAPI.deleteItem(entry.path);
-			onRefresh();
+			await FileSystemAPI.deleteItem(entry.path).then(() => onRefresh());
 			onClose();
 		} catch (error) {
 			console.error("Failed to delete item:", error);
@@ -243,12 +249,12 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
 		>
 			<MenuItem
 				icon={<PlusIcon size={16} />}
-				label="New File"
+				label={entry?.is_directory ? "New Subfile" : "New File"}
 				onClick={startCreateFile}
 			/>
 			<MenuItem
 				icon={<PlusIcon size={16} />}
-				label="New Folder"
+				label={entry?.is_directory ? "New Subdirectory" : "New Folder"}
 				onClick={startCreateFolder}
 			/>
 

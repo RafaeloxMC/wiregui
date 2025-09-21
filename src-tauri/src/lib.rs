@@ -676,6 +676,90 @@ async fn search_recursive_streaming(
     Ok(())
 }
 
+#[tauri::command]
+async fn create_file(path: String) -> Result<(), String> {
+    let file_path = Path::new(&path);
+
+    if file_path.exists() {
+        return Err(format!("File already exists: {}", path));
+    }
+
+    if let Some(parent) = file_path.parent() {
+        if !parent.exists() {
+            fs::create_dir_all(parent)
+                .await
+                .map_err(|e| format!("Failed to create parent directories: {}", e))?;
+        }
+    }
+
+    fs::write(file_path, "")
+        .await
+        .map_err(|e| format!("Failed to create file: {}", e))?;
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn create_directory(path: String) -> Result<(), String> {
+    let dir_path = Path::new(&path);
+
+    if dir_path.exists() {
+        return Err(format!("Directory already exists: {}", path));
+    }
+
+    fs::create_dir_all(dir_path)
+        .await
+        .map_err(|e| format!("Failed to create directory: {}", e))?;
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn rename_item(old_path: String, new_name: String) -> Result<(), String> {
+    let old_path_buf = Path::new(&old_path);
+
+    if !old_path_buf.exists() {
+        return Err(format!("Item does not exist: {}", old_path));
+    }
+
+    let parent_dir = old_path_buf
+        .parent()
+        .ok_or_else(|| "Cannot determine parent directory".to_string())?;
+
+    let new_path = parent_dir.join(&new_name);
+
+    if new_path.exists() {
+        return Err(format!("Item with name '{}' already exists", new_name));
+    }
+
+    fs::rename(old_path_buf, &new_path)
+        .await
+        .map_err(|e| format!("Failed to rename item: {}", e))?;
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn delete_item(path: String) -> Result<(), String> {
+    let item_path = Path::new(&path);
+
+    if !item_path.exists() {
+        return Err(format!("Item does not exist: {}", path));
+    }
+
+    if item_path.is_dir() {
+        fs::remove_dir_all(item_path)
+            .await
+            .map_err(|e| format!("Failed to delete directory: {}", e))?;
+    } else {
+        fs::remove_file(item_path)
+            .await
+            .map_err(|e| format!("Failed to delete file: {}", e))?;
+    }
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     #[cfg(target_os = "linux")]
@@ -689,7 +773,11 @@ pub fn run() {
             list_directory,
             get_home_directory,
             search_files,
-            search_files_streaming
+            search_files_streaming,
+            create_file,
+            create_directory,
+            rename_item,
+            delete_item
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

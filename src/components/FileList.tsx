@@ -76,6 +76,7 @@ export const FileListItem: React.FC<FileListItemProps> = React.memo(
 					borderRadius: "var(--border-radius-md)",
 					marginBottom: "2px",
 				}}
+				data-entry-item="true"
 				onDoubleClick={() => onDoubleClick(entry)}
 				onContextMenu={(e) => onContextMenu(entry, e)}
 				onClick={() => onSelect(entry)}
@@ -178,6 +179,7 @@ interface FileListProps {
 	entries: FileEntry[];
 	onEntryDoubleClick: (entry: FileEntry) => void;
 	onEntryContextMenu: (entry: FileEntry, event: React.MouseEvent) => void;
+	onEmptySpaceContextMenu?: (event: React.MouseEvent) => void;
 	selectedEntries: FileEntry[];
 	onSelectionChange: (entries: FileEntry[]) => void;
 	showFullPaths?: boolean;
@@ -187,6 +189,7 @@ export const FileList: React.FC<FileListProps> = ({
 	entries,
 	onEntryDoubleClick,
 	onEntryContextMenu,
+	onEmptySpaceContextMenu,
 	selectedEntries,
 	onSelectionChange,
 	showFullPaths = false,
@@ -277,13 +280,20 @@ export const FileList: React.FC<FileListProps> = ({
 			</div>
 
 			<div
-				className="p-3"
+				className="p-3 flex-1 overflow-y-auto"
 				style={{
-					overflowY: "scroll",
 					overflowX: "hidden",
-					height: "calc(100vh - 200px)",
-					maxHeight: "calc(100vh - 200px)",
 					backgroundColor: "var(--color-surface)",
+				}}
+				onContextMenu={(e) => {
+					const target = e.target as HTMLElement;
+					const isClickingOnEntry =
+						target.closest("[data-entry-item]");
+
+					if (!isClickingOnEntry) {
+						e.preventDefault();
+						onEmptySpaceContextMenu?.(e);
+					}
 				}}
 			>
 				{sortedEntries.map((entry) => (
@@ -300,7 +310,7 @@ export const FileList: React.FC<FileListProps> = ({
 
 				{entries.length === 0 && (
 					<div
-						className="text-center py-12 text-sm"
+						className="text-center py-12 text-sm empty-space"
 						style={{ color: "var(--color-textMuted)" }}
 					>
 						This folder is empty

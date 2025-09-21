@@ -28,9 +28,20 @@ export const FileManager: React.FC = () => {
 		x: number;
 		y: number;
 		entry: FileEntry | null;
+		currentDirectory: string;
+		onClose: () => void;
+		onRefresh: () => void;
 	} | null>(null);
 	const [isThemeSwitcherOpen, setIsThemeSwitcherOpen] = useState(false);
 	const themeSwitcherButtonRef = useRef<HTMLButtonElement>(null!);
+
+	useEffect(() => {
+		const unsubscribe = FileSystemAPI.onItemDeleted((_deletedPath) => {
+			handleRefresh();
+		});
+
+		return unsubscribe;
+	}, []);
 
 	const handleSelectionChange = (entries: FileEntry[]) => {
 		setSelectedEntries(entries);
@@ -165,7 +176,22 @@ export const FileManager: React.FC = () => {
 		setContextMenu({
 			x: event.clientX,
 			y: event.clientY,
-			entry,
+			entry: entry,
+			currentDirectory: currentDirectory?.current_path || "/",
+			onClose: closeContextMenu,
+			onRefresh: handleRefresh,
+		});
+	};
+
+	const handleEmptySpaceContextMenu = (event: React.MouseEvent) => {
+		event.preventDefault();
+		setContextMenu({
+			x: event.clientX,
+			y: event.clientY,
+			entry: null,
+			currentDirectory: currentDirectory?.current_path || "/",
+			onClose: closeContextMenu,
+			onRefresh: handleRefresh,
 		});
 	};
 
@@ -451,6 +477,9 @@ export const FileManager: React.FC = () => {
 							entries={displayedEntries}
 							onEntryDoubleClick={handleEntryDoubleClick}
 							onEntryContextMenu={handleEntryContextMenu}
+							onEmptySpaceContextMenu={
+								handleEmptySpaceContextMenu
+							}
 							selectedEntries={selectedEntries}
 							onSelectionChange={handleSelectionChange}
 							showFullPaths={searchQuery.trim().length > 0}
@@ -521,6 +550,7 @@ export const FileManager: React.FC = () => {
 					x={contextMenu.x}
 					y={contextMenu.y}
 					entry={contextMenu.entry}
+					currentDirectory={currentDirectory?.current_path || "/"}
 					onClose={closeContextMenu}
 					onRefresh={handleRefresh}
 				/>
