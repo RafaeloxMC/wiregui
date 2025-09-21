@@ -1,0 +1,60 @@
+{
+	"name": "AMOLED Dark",
+	"colors": {
+		"primary": "#7c3aed",
+		"primaryHover": "#6d28d9",
+		"secondary": "#64748b",
+		"accent": "#6d28d9",
+		"background": "#000000",
+		"backgroundSecondary": "#000000",
+		"surface": "#000000",
+		"surfaceHover": "#141414",
+		"surfaceElevated": "#1a1a1a",
+		"text": "#ffffff",
+		"textSecondary": "#e2e8f0",
+		"textMuted": "#a1a1aa",
+		"border": "#1f1f1f",
+		"borderLight": "#2a2a2a",
+		"error": "#ff5757",
+		"warning": "#ffb347",
+		"success": "#00d084",
+		"info": "#7c3aed"
+	},
+	"spacing": {
+		"xs": "0.25rem",
+		"sm": "0.5rem",
+		"md": "1rem",
+		"lg": "1.5rem",
+		"xl": "2rem",
+		"2xl": "3rem"
+	},
+	"typography": {
+		"fontFamily": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif",
+		"fontSize": {
+			"xs": "0.75rem",
+			"sm": "0.875rem",
+			"base": "0.9rem",
+			"lg": "1.125rem",
+			"xl": "1.25rem",
+			"2xl": "1.5rem"
+		},
+		"fontWeight": {
+			"normal": "400",
+			"medium": "500",
+			"semibold": "600",
+			"bold": "700"
+		}
+	},
+	"borderRadius": {
+		"sm": "0.375rem",
+		"md": "0.5rem",
+		"lg": "0.75rem",
+		"xl": "1rem"
+	},
+	"shadows": {
+		"sm": "0 1px 3px 0 rgba(255, 255, 255, 0.05), 0 1px 2px 0 rgba(255, 255, 255, 0.03)",
+		"md": "0 4px 6px -1px rgba(255, 255, 255, 0.05), 0 2px 4px -1px rgba(255, 255, 255, 0.03)",
+		"lg": "0 10px 15px -3px rgba(255, 255, 255, 0.05), 0 4px 6px -2px rgba(255, 255, 255, 0.025)",
+		"xl": "0 20px 25px -5px rgba(255, 255, 255, 0.05), 0 10px 10px -5px rgba(255, 255, 255, 0.02)"
+	}
+}
