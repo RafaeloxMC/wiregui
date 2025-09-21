@@ -214,6 +214,9 @@ export const FileList: React.FC<FileListProps> = ({
 
 	const sortedEntries = useMemo(() => {
 		return [...entries].sort((a, b) => {
+			if (a.is_directory && !b.is_directory) return -1;
+			if (!a.is_directory && b.is_directory) return 1;
+
 			switch (sortMode) {
 				case "name":
 					return a.name.localeCompare(b.name);
