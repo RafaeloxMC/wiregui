@@ -1,6 +1,6 @@
 # WireGUI File Manager
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/RafaeloxMC/wiregui)](https://github.com/RafaeloxMC/wiregui/releases/latest)
+[![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/RafaeloxMC/wiregui?include_prereleases)](https://github.com/RafaeloxMC/wiregui/releases/latest)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/RafaeloxMC/wiregui/tauri.yml?branch=main)](https://github.com/RafaeloxMC/wiregui/actions/workflows/tauri.yml)
 [![GitHub downloads](https://img.shields.io/github/downloads/RafaeloxMC/wiregui/total)](https://github.com/RafaeloxMC/wiregui/releases)
 [![License](https://img.shields.io/github/license/RafaeloxMC/wiregui)](LICENSE)
